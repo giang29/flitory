@@ -26,6 +26,8 @@ val remoteModule = module {
     }
 
     factory<Interceptor>(named(TAG_INTERCEPTOR_SEARCH_QUERY_PARAMETER)) {
+        // For real project, this has to be placed somewhere secure, i.e. CI/CD tool secret
+        // But for this project, this is fine
         FlickrQueryParamterInterceptor("b59eaa142fbb03d0ba6c93882fd62e30")
     }
 }
