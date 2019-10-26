@@ -16,6 +16,7 @@ dependencies {
         exclude(module = "okhttp")
     }
     implementation(Dependencies.moshi)
+    implementation(Dependencies.moshiKotlin)
     implementation(Dependencies.retrofitCoroutinesAdapter)
     implementation(Dependencies.retrofitConverterMoshi)
 

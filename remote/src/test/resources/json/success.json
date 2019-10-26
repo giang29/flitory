@@ -1,0 +1,33 @@
+{
+  "photos": {
+    "page": 1,
+    "pages": 1,
+    "perpage": 100,
+    "total": "2",
+    "photo": [
+      {
+        "id": "48961354943",
+        "owner": "183117384@N08",
+        "secret": "4128d45088",
+        "server": "65535",
+        "farm": 66,
+        "title": "Highland Cattle",
+        "ispublic": 1,
+        "isfriend": 0,
+        "isfamily": 0
+      },
+      {
+        "id": "48961354338",
+        "owner": "45582668@N03",
+        "secret": "39815c1990",
+        "server": "65535",
+        "farm": 66,
+        "title": "Animal sculptures, 01.07.2019.",
+        "ispublic": 1,
+        "isfriend": 0,
+        "isfamily": 0
+      }
+    ]
+  },
+  "stat": "ok"
+}
