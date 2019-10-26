@@ -19,8 +19,6 @@ dependencies {
     implementation(Dependencies.retrofitCoroutinesAdapter)
     implementation(Dependencies.retrofitConverterMoshi)
 
-    kapt(Dependencies.moshiCodeGen)
-
     testImplementation(TestDependencies.assertJ)
     testImplementation(TestDependencies.junit)
     testImplementation(TestDependencies.mockWebServer)

@@ -45,7 +45,6 @@ object Dependencies {
     const val lifecycleRuntimeKtx = "androidx.lifecycle:lifecycle-runtime-ktx:${Versions.lifecycle}"
     const val materialDesign = "com.google.android.material:material:${Versions.material}"
     const val moshi = "com.squareup.moshi:moshi:${Versions.moshi}"
-    const val moshiCodeGen = "com.squareup.moshi:moshi-kotlin-codegen:${Versions.moshi}"
     const val okHttp = "com.squareup.okhttp3:okhttp:${Versions.okHttp}"
     const val okHttpLoggingInterceptor = "com.squareup.okhttp3:logging-interceptor:${Versions.okHttp}"
     const val recyclerView = "androidx.recyclerview:recyclerview:${Versions.recyclerView}"
