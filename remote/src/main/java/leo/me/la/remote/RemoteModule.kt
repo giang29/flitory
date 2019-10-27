@@ -6,6 +6,7 @@ import leo.me.la.common.TAG_BOOLEAN_DEBUG
 import leo.me.la.common.TAG_FLICKR_OKHTTP_CLIENT
 import leo.me.la.common.TAG_INTERCEPTOR_SEARCH_QUERY_PARAMETER
 import leo.me.la.common.TAG_INTERCEPTOR_LOGGING
+import leo.me.la.data.source.PhotoRemoteDataSource
 import leo.me.la.remote.model.FlickrImageAdapter
 import okhttp3.Interceptor
 import okhttp3.logging.HttpLoggingInterceptor
@@ -14,6 +15,10 @@ import org.koin.dsl.module
 import retrofit2.converter.moshi.MoshiConverterFactory
 
 val remoteModule = module {
+
+    factory<PhotoRemoteDataSource> {
+        PhotoRemoteDataSourceImpl(get())
+    }
 
     single(named(TAG_FLICKR_OKHTTP_CLIENT)) {
         RemoteFactory.buildOkHttpClient(
