@@ -7,6 +7,4 @@ data class Photo(
     val server: String,
     val farm: Int,
     val title: String
-) {
-    val thumbnail = "https://farm$farm.staticflickr.com/$server/${id}_${secret}_m.jpg"
-}
+)
