@@ -1,6 +1,7 @@
 plugins {
     id("com.android.library")
     id("kotlin-android")
+    id("kotlin-android-extensions")
     id("kotlin-kapt")
 }
 
@@ -13,6 +14,9 @@ android {
     compileOptions {
         sourceCompatibility = AndroidSettings.sourceCompatibility
         targetCompatibility = AndroidSettings.targetCompatibility
+    }
+    androidExtensions {
+        isExperimental = true
     }
 }
 
