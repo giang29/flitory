@@ -1,6 +1,7 @@
 package leo.me.la.flitory.photos.items
 
 import android.widget.ImageView
+import android.widget.TextView
 import com.airbnb.epoxy.EpoxyAttribute
 import com.airbnb.epoxy.EpoxyModelClass
 import com.airbnb.epoxy.EpoxyModelWithHolder
@@ -16,9 +17,12 @@ abstract class PhotoItem: EpoxyModelWithHolder<PhotoHolder>() {
 
     override fun bind(holder: PhotoHolder) {
         holder.imageView.loadUri(photo.thumbnail)
+        holder.titleTextView.text = photo.title
+        holder.titleTextView.isSelected = true
     }
 }
 
 class PhotoHolder: KotlinEpoxyHolder() {
     val imageView by bind<ImageView>(R.id.imageView)
+    val titleTextView by bind<TextView>(R.id.titleTextView)
 }
