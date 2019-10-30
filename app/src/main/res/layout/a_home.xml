@@ -7,5 +7,10 @@
     android:layout_height="match_parent"
     tools:context=".HomeActivity"
     >
-
+    <fragment
+        android:tag="search_photo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:name="leo.me.la.flitory.photos.SearchPhotoFragment"
+        tools:layout="@layout/f_search_photo"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

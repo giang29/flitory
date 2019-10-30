@@ -24,6 +24,7 @@ object Versions {
     const val retrofit = "2.6.2"
     const val retrofitCoroutinesAdapter = "0.9.2"
     const val updatePluginVersion = "0.27.0"
+    const val epoxy = "3.8.0"
 }
 
 object Dependencies {
@@ -52,6 +53,8 @@ object Dependencies {
     const val retrofit = "com.squareup.retrofit2:retrofit:${Versions.retrofit}"
     const val retrofitCoroutinesAdapter = "com.jakewharton.retrofit:retrofit2-kotlin-coroutines-adapter:${Versions.retrofitCoroutinesAdapter}"
     const val retrofitConverterMoshi = "com.squareup.retrofit2:converter-moshi:${Versions.retrofit}"
+    const val epoxy = "com.airbnb.android:epoxy:${Versions.epoxy}"
+    const val epoxyProcessor = "com.airbnb.android:epoxy-processor:${Versions.epoxy}"
 }
 
 

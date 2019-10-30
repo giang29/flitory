@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmOptions
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -43,6 +45,14 @@ android {
             unitTests.isIncludeAndroidResources = true
         })
     }
+    kotlinOptions {
+        this as KotlinJvmOptions
+        jvmTarget = "1.8"
+    }
+}
+
+kapt {
+    correctErrorTypes = true
 }
 
 dependencies {
@@ -65,6 +75,7 @@ dependencies {
     implementation(Dependencies.lifecycleRuntimeKtx)
     implementation(Dependencies.materialDesign)
     implementation(Dependencies.recyclerView)
+    implementation(Dependencies.epoxy)
 
     androidTestImplementation(TestDependencies.assertJAndroid)
     androidTestImplementation(TestDependencies.espresso)
@@ -74,4 +85,5 @@ dependencies {
     androidTestImplementation(TestDependencies.testRule)
     androidTestImplementation(TestDependencies.testRunner)
     kapt(Dependencies.glideCompiler)
+    kapt(Dependencies.epoxyProcessor)
 }
