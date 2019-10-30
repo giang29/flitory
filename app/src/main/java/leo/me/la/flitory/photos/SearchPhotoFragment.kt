@@ -6,6 +6,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.f_search_photo.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -35,8 +36,10 @@ internal class SearchPhotoFragment :
         ) { viewModel.loadNextPage() }
     }
     private lateinit var searchView: SearchView
+    private var snackBar: Snackbar? = null
 
     override fun render(viewState: SearchPhotoViewState) {
+        snackBar?.dismiss()
         when (viewState) {
             SearchPhotoViewState.Idling -> {
                 photosList.isVisible = false
@@ -57,6 +60,23 @@ internal class SearchPhotoFragment :
             }
             is SearchPhotoViewState.LoadPageFailed -> {
                 photoController.setData(viewState.photos, false, true)
+            }
+            is SearchPhotoViewState.SearchFailed -> {
+                hideSoftKeyboard()
+                photosList.isVisible = false
+                loadingProgress.isVisible = false
+                snackBar = Snackbar.make(photosList, getString(R.string.general_error_message), Snackbar
+                    .LENGTH_INDEFINITE)
+                    .setAction(R.string.retry) { viewModel.searchPhotos(viewState.keyword) }
+                    .also { it.show() }
+            }
+            is SearchPhotoViewState.NotFound -> {
+                hideSoftKeyboard()
+                photosList.isVisible = false
+                loadingProgress.isVisible = false
+                snackBar = Snackbar.make(photosList, getString(R.string.not_found, viewState.keyword), Snackbar
+                    .LENGTH_LONG)
+                    .also { it.show() }
             }
         }
     }
