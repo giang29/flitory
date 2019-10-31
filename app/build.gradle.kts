@@ -61,6 +61,7 @@ dependencies {
     implementation(project(":domain"))
     implementation(project(":presentation"))
     implementation(project(":remote"))
+    implementation(project(":cache"))
     implementation(Dependencies.appCompat)
     implementation(Dependencies.cardView)
     implementation(Dependencies.coreKtx)

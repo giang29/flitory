@@ -1,6 +1,7 @@
 package leo.me.la.flitory
 
 import android.app.Application
+import leo.me.la.cache.cacheModule
 import leo.me.la.data.dataModule
 import leo.me.la.domain.domainModule
 import leo.me.la.presentation.presentationModule
@@ -19,7 +20,8 @@ internal class FlickrApplication: Application() {
                 domainModule,
                 dataModule,
                 presentationModule,
-                remoteModule
+                remoteModule,
+                cacheModule
             )
         }
     }
