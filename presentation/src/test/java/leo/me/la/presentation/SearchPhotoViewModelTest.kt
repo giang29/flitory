@@ -2,13 +2,13 @@ package leo.me.la.presentation
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
+import io.mockk.Ordering
 import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
 import io.mockk.verify
-import io.mockk.verifySequence
 import io.mockk.coVerify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -17,12 +17,14 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.setMain
+import leo.me.la.common.model.Keyword
 import leo.me.la.common.model.PageOfPhotos
 import leo.me.la.common.model.Photo
+import leo.me.la.domain.GetKeywordsUseCase
 import leo.me.la.domain.GetPhotosByKeywordUseCase
 import leo.me.la.exception.FlickrException
+import leo.me.la.presentation.model.KeywordWithState
 import leo.me.la.presentation.model.PhotoPresentationModel
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.After
 import org.junit.Before
 import org.junit.Rule
@@ -41,13 +43,14 @@ class SearchPhotoViewModelTest {
         every { onChanged(any()) } just Runs
     }
 
-    private val useCase: GetPhotosByKeywordUseCase = mockk()
+    private val getPhotoUseCase: GetPhotosByKeywordUseCase = mockk()
+    private val getKeywordsUseCase: GetKeywordsUseCase = mockk()
     private lateinit var viewModel: SearchPhotoViewModel
 
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        viewModel = SearchPhotoViewModel(useCase)
+        viewModel = SearchPhotoViewModel(getPhotoUseCase, getKeywordsUseCase)
         viewModel.viewStates.observeForever(observer)
     }
 
@@ -58,8 +61,56 @@ class SearchPhotoViewModelTest {
     }
 
     @Test
-    fun `should start in Idling state`() {
-        assertThat(viewModel.viewStates.value).isEqualTo(SearchPhotoViewState.Idling)
+    fun `should start in Idling state and move to KeywordsLoaded`() {
+        coEvery {
+            getKeywordsUseCase.execute()
+        } coAnswers {
+            delay(1000)
+            listOf(Keyword("Predefined"))
+        }
+
+        viewModel = SearchPhotoViewModel(getPhotoUseCase, getKeywordsUseCase)
+        viewModel.viewStates.observeForever(observer)
+
+        coVerify {
+            observer.onChanged(SearchPhotoViewState.Idling)
+        }
+
+        testDispatcher.advanceTimeBy(1000)
+
+        coVerify {
+            observer.onChanged(
+                SearchPhotoViewState.KeywordsLoaded(
+                    listOf(
+                        KeywordWithState
+                            ("Predefined", closed = true)
+                    )
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `should start in Idling state and move to KeywordsLoaded even if an error occur`() {
+        coEvery {
+            getKeywordsUseCase.execute()
+        } coAnswers {
+            delay(1000)
+            throw RuntimeException("test")
+        }
+
+        viewModel = SearchPhotoViewModel(getPhotoUseCase, getKeywordsUseCase)
+        viewModel.viewStates.observeForever(observer)
+
+        coVerify {
+            observer.onChanged(SearchPhotoViewState.Idling)
+        }
+
+        testDispatcher.advanceTimeBy(1000)
+
+        coVerify {
+            observer.onChanged(SearchPhotoViewState.KeywordsLoaded(emptyList()))
+        }
     }
 
     @Test
@@ -76,15 +127,14 @@ class SearchPhotoViewModelTest {
         }
 
         coEvery {
-            useCase.execute("Batman", 1)
+            getPhotoUseCase.execute("Batman", 1)
         } returns PageOfPhotos(
             1,
             1,
             desiredPhotoList
         )
         viewModel.searchPhotos("Batman")
-        verifySequence {
-            observer.onChanged(SearchPhotoViewState.Idling)
+        verify(ordering = Ordering.ORDERED) {
             observer.onChanged(SearchPhotoViewState.Searching)
             observer.onChanged(
                 SearchPhotoViewState.PhotosFetched(
@@ -120,21 +170,20 @@ class SearchPhotoViewModelTest {
             )
         )
         coEvery {
-            useCase.execute("Abc", 1)
+            getPhotoUseCase.execute("Abc", 1)
         } coAnswers {
             delay(1000)
             PageOfPhotos(1, 1, cancelledPhotoList)
         }
         coEvery {
-            useCase.execute("Batman", 1)
+            getPhotoUseCase.execute("Batman", 1)
         } returns PageOfPhotos(1, 1, desiredPhotoList)
         viewModel.searchPhotos("Abc")
         testDispatcher.advanceTimeBy(500)
         viewModel.searchPhotos("Batman")
         testDispatcher.advanceTimeBy(1000)
 
-        verifySequence {
-            observer.onChanged(SearchPhotoViewState.Idling)
+        verify(ordering = Ordering.ORDERED)  {
             observer.onChanged(SearchPhotoViewState.Searching)
             observer.onChanged(SearchPhotoViewState.Searching)
             observer.onChanged(
@@ -190,7 +239,7 @@ class SearchPhotoViewModelTest {
                 "Bato mano"
             )
         )
-        with(useCase) {
+        with(getPhotoUseCase) {
             coEvery { execute("Abc", 1) } returns PageOfPhotos(1, 200, firstPhotoList)
             coEvery { execute("Abc", 2) } coAnswers {
                 delay(100)
@@ -204,8 +253,7 @@ class SearchPhotoViewModelTest {
         testDispatcher.advanceTimeBy(50)
         viewModel.searchPhotos("Batman")
         testDispatcher.advanceTimeBy(100)
-        verifySequence {
-            observer.onChanged(SearchPhotoViewState.Idling)
+        verify(ordering = Ordering.ORDERED)  {
             observer.onChanged(SearchPhotoViewState.Searching)
             observer.onChanged(
                 SearchPhotoViewState.PhotosFetched(
@@ -268,7 +316,7 @@ class SearchPhotoViewModelTest {
                 "Random"
             )
         )
-        with(useCase) {
+        with(getPhotoUseCase) {
             coEvery { execute("Abc", 1) } returns PageOfPhotos(1, 200, firstPhotoList)
             coEvery { execute("Abc", 2) } returns PageOfPhotos(2, 200, secondPhotoList)
             coEvery { execute("Batman", 1) } returns PageOfPhotos(1, 1, newSearchPhotoList)
@@ -276,8 +324,7 @@ class SearchPhotoViewModelTest {
         viewModel.searchPhotos("Abc")
         viewModel.loadNextPage()
         viewModel.searchPhotos("Batman")
-        verifySequence {
-            observer.onChanged(SearchPhotoViewState.Idling)
+        verify(ordering = Ordering.ORDERED)  {
             observer.onChanged(SearchPhotoViewState.Searching)
             observer.onChanged(
                 SearchPhotoViewState.PhotosFetched(
@@ -318,14 +365,13 @@ class SearchPhotoViewModelTest {
 
     @Test
     fun `should move to SearchFailed state`() {
-        with(useCase) {
+        with(getPhotoUseCase) {
             coEvery { execute("Abc", 1) } throws FlickrException(3, "some error message", "fail")
             coEvery { execute("Def", 1) } throws Exception()
         }
         viewModel.searchPhotos("Abc")
         viewModel.searchPhotos("Def")
-        verifySequence {
-            observer.onChanged(SearchPhotoViewState.Idling)
+        verify(ordering = Ordering.ORDERED)  {
             observer.onChanged(SearchPhotoViewState.Searching)
             observer.onChanged(SearchPhotoViewState.SearchFailed("Abc"))
             observer.onChanged(SearchPhotoViewState.Searching)
@@ -355,14 +401,13 @@ class SearchPhotoViewModelTest {
                 "Bato mano $it"
             )
         }
-        with(useCase) {
+        with(getPhotoUseCase) {
             coEvery { execute("Abc", 1) } returns PageOfPhotos(1, 200, firstPhotoList)
             coEvery { execute("Abc", 2) } returns PageOfPhotos(2, 200, secondPhotoList)
         }
         viewModel.searchPhotos("Abc")
         viewModel.loadNextPage()
-        verifySequence {
-            observer.onChanged(SearchPhotoViewState.Idling)
+        verify(ordering = Ordering.ORDERED)  {
             observer.onChanged(SearchPhotoViewState.Searching)
             observer.onChanged(
                 SearchPhotoViewState.PhotosFetched(
@@ -401,19 +446,18 @@ class SearchPhotoViewModelTest {
             )
         }
         coEvery {
-            useCase.execute("Abc", 1)
+            getPhotoUseCase.execute("Abc", 1)
         } returns PageOfPhotos(1, 1, firstPhotoList)
         viewModel.searchPhotos("Abc")
         viewModel.loadNextPage()
-        verifySequence {
-            observer.onChanged(SearchPhotoViewState.Idling)
+        verify(ordering = Ordering.ORDERED)  {
             observer.onChanged(SearchPhotoViewState.Searching)
             observer.onChanged(ofType(SearchPhotoViewState.PhotosFetched::class))
         }
         verify(exactly = 0) {
             observer.onChanged(ofType(SearchPhotoViewState.LoadingNextPage::class))
         }
-        coVerify { useCase.execute(any(), any()) }
+        coVerify { getPhotoUseCase.execute(any(), any()) }
     }
 
     @Test
@@ -429,16 +473,15 @@ class SearchPhotoViewModelTest {
             )
         }
         coEvery {
-            useCase.execute("Abc", 1)
+            getPhotoUseCase.execute("Abc", 1)
         } returns PageOfPhotos(1, 200, firstPhotoList)
         coEvery {
-            useCase.execute("Abc", 2)
+            getPhotoUseCase.execute("Abc", 2)
         } throws Exception()
         viewModel.searchPhotos("Abc")
         viewModel.loadNextPage()
         viewModel.loadNextPage()
-        verifySequence {
-            observer.onChanged(SearchPhotoViewState.Idling)
+        verify(ordering = Ordering.ORDERED)  {
             observer.onChanged(SearchPhotoViewState.Searching)
             observer.onChanged(ofType(SearchPhotoViewState.PhotosFetched::class))
             observer.onChanged(
@@ -455,7 +498,7 @@ class SearchPhotoViewModelTest {
             observer.onChanged(ofType(SearchPhotoViewState.LoadPageFailed::class))
         }
         coVerify(exactly = 2) {
-            useCase.execute("Abc", 2)
+            getPhotoUseCase.execute("Abc", 2)
         }
     }
 
@@ -481,7 +524,7 @@ class SearchPhotoViewModelTest {
                 "Highland Cattler"
             )
         }
-        with(useCase) {
+        with(getPhotoUseCase) {
             coEvery { execute("Abc", 1) } returns PageOfPhotos(1, 200, firstPhotoList)
             coEvery { execute("Abc", 2) } coAnswers {
                 delay(1000)
@@ -493,12 +536,10 @@ class SearchPhotoViewModelTest {
         viewModel.loadNextPage()
         viewModel.resetSearch()
         testDispatcher.advanceTimeBy(1000)
-        verifySequence {
-            observer.onChanged(SearchPhotoViewState.Idling)
+        verify(ordering = Ordering.ORDERED)  {
             observer.onChanged(SearchPhotoViewState.Searching)
             observer.onChanged(ofType(SearchPhotoViewState.PhotosFetched::class))
             observer.onChanged(ofType(SearchPhotoViewState.LoadingNextPage::class))
-            observer.onChanged(SearchPhotoViewState.Idling)
         }
         verify(exactly = 0) {
             observer.onChanged(

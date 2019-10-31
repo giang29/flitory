@@ -10,14 +10,18 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
+import leo.me.la.domain.GetKeywordsUseCase
 import leo.me.la.domain.GetPhotosByKeywordUseCase
 import leo.me.la.exception.FlickrException
+import leo.me.la.presentation.model.KeywordWithState
 import leo.me.la.presentation.model.PhotoPresentationModel
+import leo.me.la.presentation.model.toKeywordWithState
 
 @ExperimentalCoroutinesApi
 @FlowPreview
 class SearchPhotoViewModel(
-    private val getPhotosByKeywordUseCase: GetPhotosByKeywordUseCase
+    private val getPhotosByKeywordUseCase: GetPhotosByKeywordUseCase,
+    getKeywordsUseCase: GetKeywordsUseCase
 ) : BaseViewModel<SearchPhotoViewState>() {
 
     private var loadNextPageJob: Job? = null
@@ -60,6 +64,16 @@ class SearchPhotoViewModel(
                 }.collect {
                     _viewStates.value = it
                 }
+        }
+        viewModelScope.launch {
+            _viewStates.value = SearchPhotoViewState.KeywordsLoaded(
+                try {
+                    getKeywordsUseCase.execute()
+                        .map { it.toKeywordWithState() }
+                } catch (_: Throwable) {
+                    emptyList<KeywordWithState>()
+                }
+            )
         }
     }
 

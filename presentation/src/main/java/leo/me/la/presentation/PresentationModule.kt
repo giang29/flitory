@@ -12,7 +12,7 @@ import org.koin.dsl.module
 @ExperimentalCoroutinesApi
 val presentationModule = module {
     baseViewModel {
-        SearchPhotoViewModel(get())
+        SearchPhotoViewModel(get(), get())
     }
 }
 

@@ -1,9 +1,11 @@
 package leo.me.la.presentation
 
+import leo.me.la.presentation.model.KeywordWithState
 import leo.me.la.presentation.model.PhotoPresentationModel
 
 sealed class SearchPhotoViewState : BaseViewState {
     object Idling : SearchPhotoViewState()
+    data class KeywordsLoaded(val keywords: List<KeywordWithState>): SearchPhotoViewState()
     object Searching : SearchPhotoViewState()
     data class LoadingNextPage(
         val photos: List<PhotoPresentationModel>
