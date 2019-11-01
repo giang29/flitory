@@ -15,6 +15,8 @@ import leo.me.la.flitory.base.KotlinEpoxyHolder
 import leo.me.la.flitory.util.ThrottlingClickListener
 import leo.me.la.flitory.util.toPx
 import leo.me.la.presentation.model.KeywordWithState
+import kotlin.math.max
+import kotlin.math.min
 
 @EpoxyModelClass(layout = R.layout.i_keyword)
 internal abstract class KeywordItem : EpoxyModelWithHolder<KeywordHolder>() {
@@ -36,14 +38,14 @@ internal abstract class KeywordItem : EpoxyModelWithHolder<KeywordHolder>() {
 
     override fun bind(holder: KeywordHolder) {
         holder.rootItem.apply {
-            updatePadding(left = (16 + nestedLevel * 16).toPx())
+            updatePadding(left = (16 + min(nestedLevel, 2) * 16).toPx())
             setOnClickListener(
                 ThrottlingClickListener(coroutineScope, { clickListener(keyword.keyword) })
             )
         }
         holder.keywordTextView.apply {
             text = keyword.keyword
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 20f - 2 * nestedLevel)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, max(20f - 2 * nestedLevel, 16f))
         }
         holder.extendCollapseButton.apply {
             isVisible = !keyword.subKeywords.isNullOrEmpty()
