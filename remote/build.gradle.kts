@@ -8,6 +8,7 @@ dependencies {
     implementation(project(":data"))
     implementation(project(":exception"))
 
+    implementation(Dependencies.coroutinesCore)
     implementation(Dependencies.koinCore)
     implementation(Dependencies.kotlinStdLib)
     implementation(Dependencies.okHttp)
@@ -17,7 +18,6 @@ dependencies {
     }
     implementation(Dependencies.moshi)
     implementation(Dependencies.moshiKotlin)
-    implementation(Dependencies.retrofitCoroutinesAdapter)
     implementation(Dependencies.retrofitConverterMoshi)
 
     testImplementation(TestDependencies.assertJ)

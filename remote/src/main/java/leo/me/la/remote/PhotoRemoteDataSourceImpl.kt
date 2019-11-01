@@ -11,7 +11,7 @@ internal class PhotoRemoteDataSourceImpl(
 
     override suspend fun getPhotosByKeyword(text: String, page: Int): PageOfPhotos {
         try {
-            return flickrService.fetchImagesAsync(text, page).await().let {
+            return flickrService.fetchImages(text, page).let {
                 PageOfPhotos(
                     it.photos.page,
                     it.photos.pages,
