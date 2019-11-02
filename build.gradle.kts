@@ -10,6 +10,7 @@ buildscript {
     dependencies {
         classpath("com.android.tools.build:gradle:${Versions.androidGradlePlugin}")
         classpath(kotlin("gradle-plugin", version = Versions.kotlin))
+        classpath(Dependencies.kotlinAllOpen)
         classpath("com.github.ben-manes:gradle-versions-plugin:${Versions.updatePluginVersion}")
     }
 }

@@ -23,6 +23,7 @@ import kotlin.coroutines.CoroutineContext
 
 @ExperimentalCoroutinesApi
 @FlowPreview
+@OpenForTesting
 class SearchPhotoViewModel(
     private val getPhotosByKeywordUseCase: GetPhotosByKeywordUseCase,
     getKeywordsUseCase: GetKeywordsUseCase,

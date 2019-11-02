@@ -5,6 +5,7 @@ plugins {
     id("kotlin-android")
     id("kotlin-android-extensions")
     id("kotlin-kapt")
+    id("kotlin-allopen")
 }
 
 val app_name: String by project
@@ -49,6 +50,10 @@ android {
         this as KotlinJvmOptions
         jvmTarget = "1.8"
     }
+}
+
+allOpen {
+    annotation("leo.me.la.presentation.OpenForTesting")
 }
 
 kapt {

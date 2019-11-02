@@ -38,6 +38,7 @@ object Dependencies {
     const val glideOkHttp = "com.github.bumptech.glide:okhttp3-integration:${Versions.glide}"
     const val koinCore = "org.koin:koin-core:${Versions.koin}"
     const val koinViewModel = "org.koin:koin-androidx-viewmodel:${Versions.koin}"
+    const val kotlinAllOpen = "org.jetbrains.kotlin:kotlin-allopen:${Versions.kotlin}"
     const val kotlinStdLib = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${Versions.kotlin}"
     const val livecycleExtensions = "androidx.lifecycle:lifecycle-extensions:${Versions.lifecycle}"
     const val lifecycleCompiler = "androidx.lifecycle:lifecycle-compiler:${Versions.lifecycle}"
