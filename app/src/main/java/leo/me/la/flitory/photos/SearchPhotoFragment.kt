@@ -60,12 +60,11 @@ internal class SearchPhotoFragment :
                 loadingProgress.isVisible = false
             }
             is SearchPhotoViewState.KeywordsLoaded -> {
-                keywordListBehavior.state = STATE_EXPANDED
-                photosList.isVisible = false
                 loadingProgress.isVisible = false
                 keywordController.setData(
                     viewState.keywords
                 )
+                keywordListBehavior.state = STATE_EXPANDED
             }
             SearchPhotoViewState.Searching -> {
                 photosList.isVisible = false
@@ -78,6 +77,9 @@ internal class SearchPhotoFragment :
                 loadingProgress.isVisible = false
                 photoController.setData(viewState.photos, false, false)
                 pageLoadingHandler.hasNextPage = viewState.page < viewState.totalPages
+                if (viewState.page == 1) {
+                    photosList.smoothScrollToPosition(0)
+                }
             }
             is SearchPhotoViewState.LoadingNextPage -> {
                 photoController.setData(viewState.photos, true, false)
