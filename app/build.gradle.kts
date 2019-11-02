@@ -87,7 +87,9 @@ dependencies {
     androidTestImplementation(TestDependencies.espresso)
     androidTestImplementation(TestDependencies.espressoCont)
     androidTestImplementation(TestDependencies.koinTest)
-    androidTestImplementation(TestDependencies.mockk)
+    androidTestImplementation(TestDependencies.mockkAndroid) {
+        exclude(group = "org.jetbrains.kotlin", module = "kotlin-reflect")
+    }
     androidTestImplementation(TestDependencies.testRule)
     androidTestImplementation(TestDependencies.testRunner)
     kapt(Dependencies.glideCompiler)

@@ -67,6 +67,7 @@ object TestDependencies {
     const val junit = "junit:junit:${Versions.junit}"
     const val koinTest = "org.koin:koin-test:${Versions.koin}"
     const val mockk = "io.mockk:mockk:${Versions.mockk}"
+    const val mockkAndroid = "io.mockk:mockk-android:${Versions.mockk}"
     const val mockWebServer = "com.squareup.okhttp3:mockwebserver:${Versions.mockWebServer}"
     const val testRule = "androidx.test:rules:${Versions.androidTest}"
     const val testRunner = "androidx.test:runner:${Versions.androidTest}"
