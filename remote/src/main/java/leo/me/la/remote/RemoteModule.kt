@@ -2,6 +2,7 @@ package leo.me.la.remote
 
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import kotlinx.coroutines.Dispatchers
 import leo.me.la.common.TAG_BOOLEAN_DEBUG
 import leo.me.la.common.TAG_FLICKR_OKHTTP_CLIENT
 import leo.me.la.common.TAG_INTERCEPTOR_SEARCH_QUERY_PARAMETER
@@ -13,12 +14,16 @@ import okhttp3.logging.HttpLoggingInterceptor
 import org.koin.core.qualifier.named
 import org.koin.dsl.module
 import retrofit2.converter.moshi.MoshiConverterFactory
+import kotlin.coroutines.CoroutineContext
 
+private const val TAG_IO_CONTEXT = "TAG_IO_CONTEXT"
 val remoteModule = module {
 
     factory<PhotoRemoteDataSource> {
-        PhotoRemoteDataSourceImpl(get())
+        PhotoRemoteDataSourceImpl(get(), get(named(TAG_IO_CONTEXT)))
     }
+
+    factory<CoroutineContext>(named(TAG_IO_CONTEXT)) { Dispatchers.IO }
 
     single(named(TAG_FLICKR_OKHTTP_CLIENT)) {
         RemoteFactory.buildOkHttpClient(

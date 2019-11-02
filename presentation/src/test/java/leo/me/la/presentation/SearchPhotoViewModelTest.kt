@@ -2,14 +2,14 @@ package leo.me.la.presentation
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
-import io.mockk.Ordering
 import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
-import io.mockk.verify
 import io.mockk.coVerify
+import io.mockk.verifyAll
+import io.mockk.verifyOrder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -35,6 +35,7 @@ import org.junit.rules.TestRule
 @FlowPreview
 class SearchPhotoViewModelTest {
     private val testDispatcher = TestCoroutineDispatcher()
+    private val backgroundContext = TestCoroutineDispatcher()
 
     @get:Rule
     var rule: TestRule = InstantTaskExecutorRule()
@@ -50,7 +51,14 @@ class SearchPhotoViewModelTest {
     @Before
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
-        viewModel = SearchPhotoViewModel(getPhotoUseCase, getKeywordsUseCase)
+
+        coEvery {
+            getKeywordsUseCase.execute()
+        } coAnswers {
+            emptyList()
+        }
+
+        viewModel = SearchPhotoViewModel(getPhotoUseCase, getKeywordsUseCase, backgroundContext)
         viewModel.viewStates.observeForever(observer)
     }
 
@@ -68,17 +76,17 @@ class SearchPhotoViewModelTest {
             delay(1000)
             listOf(Keyword("Predefined"))
         }
-
-        viewModel = SearchPhotoViewModel(getPhotoUseCase, getKeywordsUseCase)
+        val observer = mockk<Observer<SearchPhotoViewState>>(relaxUnitFun = true)
+        viewModel = SearchPhotoViewModel(getPhotoUseCase, getKeywordsUseCase, backgroundContext)
         viewModel.viewStates.observeForever(observer)
 
-        coVerify {
+        coVerify(exactly = 1) {
             observer.onChanged(SearchPhotoViewState.Idling)
         }
 
-        testDispatcher.advanceTimeBy(1000)
+        backgroundContext.advanceTimeBy(1000)
 
-        coVerify {
+        coVerify(exactly = 1) {
             observer.onChanged(
                 SearchPhotoViewState.KeywordsLoaded(
                     listOf(
@@ -99,16 +107,17 @@ class SearchPhotoViewModelTest {
             throw RuntimeException("test")
         }
 
-        viewModel = SearchPhotoViewModel(getPhotoUseCase, getKeywordsUseCase)
+        val observer = mockk<Observer<SearchPhotoViewState>>(relaxUnitFun = true)
+        viewModel = SearchPhotoViewModel(getPhotoUseCase, getKeywordsUseCase, backgroundContext)
         viewModel.viewStates.observeForever(observer)
 
-        coVerify {
+        coVerify(exactly = 1) {
             observer.onChanged(SearchPhotoViewState.Idling)
         }
 
-        testDispatcher.advanceTimeBy(1000)
+        backgroundContext.advanceTimeBy(1000)
 
-        coVerify {
+        coVerify(exactly = 1) {
             observer.onChanged(SearchPhotoViewState.KeywordsLoaded(emptyList()))
         }
     }
@@ -134,7 +143,7 @@ class SearchPhotoViewModelTest {
             desiredPhotoList
         )
         viewModel.searchPhotos("Batman")
-        verify(ordering = Ordering.ORDERED) {
+        verifyOrder {
             observer.onChanged(SearchPhotoViewState.Searching)
             observer.onChanged(
                 SearchPhotoViewState.PhotosFetched(
@@ -179,11 +188,11 @@ class SearchPhotoViewModelTest {
             getPhotoUseCase.execute("Batman", 1)
         } returns PageOfPhotos(1, 1, desiredPhotoList)
         viewModel.searchPhotos("Abc")
-        testDispatcher.advanceTimeBy(500)
+        backgroundContext.advanceTimeBy(500)
         viewModel.searchPhotos("Batman")
-        testDispatcher.advanceTimeBy(1000)
+        backgroundContext.advanceTimeBy(1000)
 
-        verify(ordering = Ordering.ORDERED)  {
+        verifyOrder  {
             observer.onChanged(SearchPhotoViewState.Searching)
             observer.onChanged(SearchPhotoViewState.Searching)
             observer.onChanged(
@@ -196,7 +205,7 @@ class SearchPhotoViewModelTest {
             )
         }
 
-        verify(exactly = 0) {
+        verifyAll(inverse = true) {
             observer.onChanged(
                 SearchPhotoViewState.PhotosFetched(
                     "Abc",
@@ -248,12 +257,12 @@ class SearchPhotoViewModelTest {
             coEvery { execute("Batman", 1) } returns PageOfPhotos(1, 1, secondPhotoList)
         }
         viewModel.searchPhotos("Abc")
-        testDispatcher.advanceTimeBy(10)
+        backgroundContext.advanceTimeBy(10)
         viewModel.loadNextPage()
-        testDispatcher.advanceTimeBy(50)
+        backgroundContext.advanceTimeBy(50)
         viewModel.searchPhotos("Batman")
-        testDispatcher.advanceTimeBy(100)
-        verify(ordering = Ordering.ORDERED)  {
+        backgroundContext.advanceTimeBy(100)
+        verifyOrder {
             observer.onChanged(SearchPhotoViewState.Searching)
             observer.onChanged(
                 SearchPhotoViewState.PhotosFetched(
@@ -278,7 +287,7 @@ class SearchPhotoViewModelTest {
                 )
             )
         }
-        verify(exactly = 0) {
+        verifyAll(inverse = true) {
             observer.onChanged(ofType(SearchPhotoViewState.SearchFailed::class))
             observer.onChanged(ofType(SearchPhotoViewState.LoadPageFailed::class))
         }
@@ -324,7 +333,7 @@ class SearchPhotoViewModelTest {
         viewModel.searchPhotos("Abc")
         viewModel.loadNextPage()
         viewModel.searchPhotos("Batman")
-        verify(ordering = Ordering.ORDERED)  {
+        verifyOrder  {
             observer.onChanged(SearchPhotoViewState.Searching)
             observer.onChanged(
                 SearchPhotoViewState.PhotosFetched(
@@ -357,7 +366,7 @@ class SearchPhotoViewModelTest {
                 )
             )
         }
-        verify(exactly = 0) {
+        verifyAll(inverse = true) {
             observer.onChanged(ofType(SearchPhotoViewState.SearchFailed::class))
             observer.onChanged(ofType(SearchPhotoViewState.LoadPageFailed::class))
         }
@@ -371,7 +380,7 @@ class SearchPhotoViewModelTest {
         }
         viewModel.searchPhotos("Abc")
         viewModel.searchPhotos("Def")
-        verify(ordering = Ordering.ORDERED)  {
+        verifyOrder  {
             observer.onChanged(SearchPhotoViewState.Searching)
             observer.onChanged(SearchPhotoViewState.SearchFailed("Abc"))
             observer.onChanged(SearchPhotoViewState.Searching)
@@ -407,7 +416,7 @@ class SearchPhotoViewModelTest {
         }
         viewModel.searchPhotos("Abc")
         viewModel.loadNextPage()
-        verify(ordering = Ordering.ORDERED)  {
+        verifyOrder  {
             observer.onChanged(SearchPhotoViewState.Searching)
             observer.onChanged(
                 SearchPhotoViewState.PhotosFetched(
@@ -450,11 +459,11 @@ class SearchPhotoViewModelTest {
         } returns PageOfPhotos(1, 1, firstPhotoList)
         viewModel.searchPhotos("Abc")
         viewModel.loadNextPage()
-        verify(ordering = Ordering.ORDERED)  {
+        verifyOrder  {
             observer.onChanged(SearchPhotoViewState.Searching)
             observer.onChanged(ofType(SearchPhotoViewState.PhotosFetched::class))
         }
-        verify(exactly = 0) {
+        verifyAll(inverse = true) {
             observer.onChanged(ofType(SearchPhotoViewState.LoadingNextPage::class))
         }
         coVerify { getPhotoUseCase.execute(any(), any()) }
@@ -481,7 +490,7 @@ class SearchPhotoViewModelTest {
         viewModel.searchPhotos("Abc")
         viewModel.loadNextPage()
         viewModel.loadNextPage()
-        verify(ordering = Ordering.ORDERED)  {
+        verifyOrder  {
             observer.onChanged(SearchPhotoViewState.Searching)
             observer.onChanged(ofType(SearchPhotoViewState.PhotosFetched::class))
             observer.onChanged(
@@ -532,16 +541,16 @@ class SearchPhotoViewModelTest {
             }
         }
         viewModel.searchPhotos("Abc")
-        testDispatcher.advanceTimeBy(100)
+        backgroundContext.advanceTimeBy(100)
         viewModel.loadNextPage()
         viewModel.resetSearch()
-        testDispatcher.advanceTimeBy(1000)
-        verify(ordering = Ordering.ORDERED)  {
+        backgroundContext.advanceTimeBy(1000)
+        verifyOrder  {
             observer.onChanged(SearchPhotoViewState.Searching)
             observer.onChanged(ofType(SearchPhotoViewState.PhotosFetched::class))
             observer.onChanged(ofType(SearchPhotoViewState.LoadingNextPage::class))
         }
-        verify(exactly = 0) {
+        verifyAll(inverse = true) {
             observer.onChanged(
                 SearchPhotoViewState.PhotosFetched(
                     "Abc",

@@ -2,26 +2,31 @@ package leo.me.la.presentation
 
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.transformLatest
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import leo.me.la.domain.GetKeywordsUseCase
 import leo.me.la.domain.GetPhotosByKeywordUseCase
 import leo.me.la.exception.FlickrException
 import leo.me.la.presentation.model.KeywordWithState
 import leo.me.la.presentation.model.PhotoPresentationModel
 import leo.me.la.presentation.model.toKeywordWithState
+import kotlin.coroutines.CoroutineContext
 
 @ExperimentalCoroutinesApi
 @FlowPreview
 class SearchPhotoViewModel(
     private val getPhotosByKeywordUseCase: GetPhotosByKeywordUseCase,
-    getKeywordsUseCase: GetKeywordsUseCase
+    getKeywordsUseCase: GetKeywordsUseCase,
+    private val backgroundContext: CoroutineContext = Dispatchers.Default
 ) : BaseViewModel<SearchPhotoViewState>() {
 
     private var loadNextPageJob: Job? = null
@@ -34,7 +39,7 @@ class SearchPhotoViewModel(
             keywordChangedNotifier.consumeAsFlow()
                 .transformLatest {
                     loadNextPageJob?.cancel()
-                    _viewStates.value = SearchPhotoViewState.Searching
+                    emit(SearchPhotoViewState.Searching)
                     try {
                         val result = getPhotosByKeywordUseCase.execute(it, 1)
 
@@ -61,15 +66,19 @@ class SearchPhotoViewModel(
                             )
                         }
                     }
-                }.collect {
+                }
+                .flowOn(backgroundContext)
+                .collect {
                     _viewStates.value = it
                 }
         }
         viewModelScope.launch {
             _viewStates.value = SearchPhotoViewState.KeywordsLoaded(
                 try {
-                    getKeywordsUseCase.execute()
-                        .map { it.toKeywordWithState() }
+                    withContext(backgroundContext) {
+                        getKeywordsUseCase.execute()
+                            .map { it.toKeywordWithState() }
+                    }
                 } catch (_: Throwable) {
                     emptyList<KeywordWithState>()
                 }
@@ -117,18 +126,19 @@ class SearchPhotoViewModel(
                 _viewStates.value = SearchPhotoViewState.LoadingNextPage(fetchedPhotos)
                 loadNextPageJob = viewModelScope.launch {
                     try {
-                        val nextPagePhotoResult =
-                            getPhotosByKeywordUseCase.execute(keyword, nextPage)
-                        _viewStates.value = SearchPhotoViewState.PhotosFetched(
-                            keyword,
-                            (fetchedPhotos + nextPagePhotoResult.photos.map { p ->
-                                PhotoPresentationModel.fromPhoto(
-                                    p
-                                )
-                            }).distinct(),
-                            nextPage,
-                            nextPagePhotoResult.totalPages
-                        )
+                        val newState = withContext(backgroundContext) {
+                            val nextPagePhotoResult =
+                                getPhotosByKeywordUseCase.execute(keyword, nextPage)
+                            SearchPhotoViewState.PhotosFetched(
+                                keyword,
+                                (fetchedPhotos + nextPagePhotoResult.photos.map { p ->
+                                    PhotoPresentationModel.fromPhoto(p)
+                                }).distinct(),
+                                nextPage,
+                                nextPagePhotoResult.totalPages
+                            )
+                        }
+                        _viewStates.value = newState
                     } catch (ignored: CancellationException) {
 
                     } catch (e: Throwable) {
