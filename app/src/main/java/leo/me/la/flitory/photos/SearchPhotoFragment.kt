@@ -5,6 +5,7 @@ import android.view.View
 import android.widget.LinearLayout
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -27,7 +28,7 @@ import leo.me.la.presentation.SearchPhotoViewState
 @FlowPreview
 @ExperimentalCoroutinesApi
 internal class SearchPhotoFragment :
-    BaseFragment<SearchPhotoViewModel, SearchPhotoViewState>(SearchPhotoViewModel::class) {
+    BaseFragment<SearchPhotoViewModel, SearchPhotoViewState>() {
 
     override val layout: Int = R.layout.f_search_photo
 
@@ -171,4 +172,6 @@ internal class SearchPhotoFragment :
             override fun onSlide(bottomSheet: View, slideOffset: Float) {}
         })
     }
+
+    override val viewModel: SearchPhotoViewModel by viewModels { viewModelFactory }
 }

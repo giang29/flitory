@@ -26,12 +26,13 @@ dependencies {
     implementation(project(":exception"))
 
     implementation(Dependencies.coroutinesAndroid)
-    implementation(Dependencies.koinViewModel)
     implementation(Dependencies.kotlinStdLib)
     implementation(Dependencies.livecycleExtensions)
     implementation(Dependencies.lifecycleViewModelKtx)
     kapt(Dependencies.lifecycleCompiler)
 
+    implementation(Dependencies.dagger)
+    kapt(Dependencies.daggerCompiler)
     testImplementation(TestDependencies.archCoreTesting)
     testImplementation(TestDependencies.assertJ)
     testImplementation(TestDependencies.mockk)

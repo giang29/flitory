@@ -1,6 +1,7 @@
 package leo.me.la.remote
 
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.TestCoroutineDispatcher
 import leo.me.la.common.model.PageOfPhotos
 import leo.me.la.common.model.Photo
 import leo.me.la.exception.FlickrException
@@ -9,8 +10,9 @@ import okhttp3.mockwebserver.MockResponse
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.Test
 
-internal class PhotoRemoteDataSourceImplTest: BaseApiTest() {
-    private val photoRemoteDataSourceImpl = PhotoRemoteDataSourceImpl(getMockedRestApi())
+internal class PhotoRemoteDataSourceImplTest : BaseApiTest() {
+    private val photoRemoteDataSourceImpl =
+        PhotoRemoteDataSourceImpl(getMockedRestApi(), TestCoroutineDispatcher())
 
     @Test
     fun `should map successfully to app model`() {

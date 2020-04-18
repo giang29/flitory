@@ -5,11 +5,13 @@ import kotlinx.coroutines.withContext
 import leo.me.la.common.model.PageOfPhotos
 import leo.me.la.common.model.Photo
 import leo.me.la.data.source.PhotoRemoteDataSource
+import leo.me.la.remote.di.IOContext
+import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
-internal class PhotoRemoteDataSourceImpl(
+internal class PhotoRemoteDataSourceImpl @Inject constructor(
     private val flickrService: FlickrService,
-    private val ioContext: CoroutineContext
+    @IOContext private val ioContext: CoroutineContext
 ): PhotoRemoteDataSource {
 
     override suspend fun getPhotosByKeyword(text: String, page: Int): PageOfPhotos {

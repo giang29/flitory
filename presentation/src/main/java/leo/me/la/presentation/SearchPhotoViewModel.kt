@@ -19,12 +19,13 @@ import leo.me.la.exception.FlickrException
 import leo.me.la.presentation.model.KeywordWithState
 import leo.me.la.presentation.model.PhotoPresentationModel
 import leo.me.la.presentation.model.toKeywordWithState
+import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
 @ExperimentalCoroutinesApi
 @FlowPreview
 @OpenForTesting
-class SearchPhotoViewModel(
+class SearchPhotoViewModel @Inject constructor(
     private val getPhotosByKeywordUseCase: GetPhotosByKeywordUseCase,
     getKeywordsUseCase: GetKeywordsUseCase,
     private val backgroundContext: CoroutineContext = Dispatchers.Default

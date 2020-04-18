@@ -6,8 +6,10 @@ plugins {
 dependencies {
     implementation(project(":common"))
     implementation(project(":data"))
+    implementation(Dependencies.dagger)
+    kapt(Dependencies.daggerCompiler)
 
-    implementation(Dependencies.koinCore)
+
     implementation(Dependencies.kotlinStdLib)
 
     testImplementation(TestDependencies.assertJ)

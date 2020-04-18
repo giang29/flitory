@@ -4,7 +4,7 @@ import leo.me.la.remote.model.ImageResponseRemoteModel
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-interface FlickrService {
+internal interface FlickrService {
 
     @GET("services/rest/")
     suspend fun fetchImages(

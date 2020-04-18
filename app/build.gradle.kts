@@ -75,18 +75,20 @@ dependencies {
     implementation(Dependencies.constraintLayout)
     implementation(Dependencies.glide)
     implementation(Dependencies.glideOkHttp)
-    implementation(Dependencies.koinCore)
-    implementation(Dependencies.koinViewModel)
     implementation(Dependencies.kotlinStdLib)
     implementation(Dependencies.lifecycleRuntimeKtx)
     implementation(Dependencies.materialDesign)
     implementation(Dependencies.recyclerView)
     implementation(Dependencies.epoxy)
+    implementation(Dependencies.dagger)
+    implementation(Dependencies.fragmentKtx)
+    kapt(Dependencies.daggerCompiler)
+    implementation(Dependencies.daggerAndroid)
+    kapt(Dependencies.daggerAndroidProcessor)
 
     androidTestImplementation(TestDependencies.assertJAndroid)
     androidTestImplementation(TestDependencies.espresso)
     androidTestImplementation(TestDependencies.espressoCont)
-    androidTestImplementation(TestDependencies.koinTest)
     androidTestImplementation(TestDependencies.mockkAndroid) {
         exclude(group = "org.jetbrains.kotlin", module = "kotlin-reflect")
     }

@@ -10,8 +10,9 @@ import com.squareup.moshi.ToJson
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import leo.me.la.exception.FlickrException
 import leo.me.la.exception.UnexpectedException
+import javax.inject.Inject
 
-internal class FlickrImageAdapter {
+internal class FlickrImageAdapter @Inject constructor() {
 
     private val responseAdapter: JsonAdapter<ImageResponseRemoteModel>
     private val errorAdapter: JsonAdapter<FlickrException>
@@ -40,7 +41,7 @@ internal class FlickrImageAdapter {
             throw UnexpectedException(t)
         } finally {
             reader.beginObject()
-            while(reader.hasNext())
+            while (reader.hasNext())
                 reader.skipValue()
             reader.endObject()
         }

@@ -1,4 +1,5 @@
 object Versions {
+    const val dagger = "2.27"
     const val androidGradlePlugin = "3.5.1"
     const val androidTest = "1.3.0-alpha02"
     const val androidX = "1.1.0"
@@ -12,7 +13,6 @@ object Versions {
     const val espresso = "3.3.0-alpha02"
     const val glide = "4.10.0"
     const val junit = "4.13-beta-3"
-    const val koin = "2.1.0-alpha-1"
     const val kotlin = "1.3.50"
     const val lifecycle = "2.2.0-rc01"
     const val material = "1.2.0-alpha01"
@@ -27,6 +27,7 @@ object Versions {
 }
 
 object Dependencies {
+    const val fragmentKtx = "androidx.fragment:fragment-ktx:${Versions.coreKtx}"
     const val appCompat = "androidx.appcompat:appcompat:${Versions.androidX}"
     const val cardView = "androidx.cardview:cardview:${Versions.cardView}"
     const val constraintLayout = "androidx.constraintlayout:constraintlayout:${Versions.constraintlayout}"
@@ -36,8 +37,6 @@ object Dependencies {
     const val glide = "com.github.bumptech.glide:glide:${Versions.glide}"
     const val glideCompiler = "com.github.bumptech.glide:compiler:${Versions.glide}"
     const val glideOkHttp = "com.github.bumptech.glide:okhttp3-integration:${Versions.glide}"
-    const val koinCore = "org.koin:koin-core:${Versions.koin}"
-    const val koinViewModel = "org.koin:koin-androidx-viewmodel:${Versions.koin}"
     const val kotlinAllOpen = "org.jetbrains.kotlin:kotlin-allopen:${Versions.kotlin}"
     const val kotlinStdLib = "org.jetbrains.kotlin:kotlin-stdlib-jdk8:${Versions.kotlin}"
     const val livecycleExtensions = "androidx.lifecycle:lifecycle-extensions:${Versions.lifecycle}"
@@ -54,6 +53,10 @@ object Dependencies {
     const val retrofitConverterMoshi = "com.squareup.retrofit2:converter-moshi:${Versions.retrofit}"
     const val epoxy = "com.airbnb.android:epoxy:${Versions.epoxy}"
     const val epoxyProcessor = "com.airbnb.android:epoxy-processor:${Versions.epoxy}"
+    const val dagger = "com.google.dagger:dagger:${Versions.dagger}"
+    const val daggerCompiler = "com.google.dagger:dagger-compiler:${Versions.dagger}"
+    const val daggerAndroid = "com.google.dagger:dagger-android-support:${Versions.dagger}"
+    const val daggerAndroidProcessor = "com.google.dagger:dagger-android-processor:${Versions.dagger}"
 }
 
 
@@ -65,7 +68,6 @@ object TestDependencies {
     const val espressoCont = "androidx.test.espresso:espresso-contrib:${Versions.espresso}"
     const val coroutinesTest = "org.jetbrains.kotlinx:kotlinx-coroutines-test:${Versions.coroutinesCore}"
     const val junit = "junit:junit:${Versions.junit}"
-    const val koinTest = "org.koin:koin-test:${Versions.koin}"
     const val mockk = "io.mockk:mockk:${Versions.mockk}"
     const val mockkAndroid = "io.mockk:mockk-android:${Versions.mockk}"
     const val mockWebServer = "com.squareup.okhttp3:mockwebserver:${Versions.mockWebServer}"

@@ -5,21 +5,24 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.annotation.CallSuper
-import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import leo.me.la.presentation.BaseViewModel
 import leo.me.la.presentation.BaseViewState
-import org.koin.androidx.viewmodel.ext.android.viewModel
-import kotlin.reflect.KClass
 import android.app.Activity
 import android.view.inputmethod.InputMethodManager
+import androidx.lifecycle.ViewModelProvider
+import dagger.android.support.DaggerFragment
+import javax.inject.Inject
 
 
-internal abstract class BaseFragment<VM : BaseViewModel<VS>, VS : BaseViewState>(clazz: KClass<VM>) :
-    Fragment() {
+internal abstract class BaseFragment<VM : BaseViewModel<VS>, VS : BaseViewState> :
+    DaggerFragment() {
     protected abstract val layout: Int
 
-    protected val viewModel by viewModel(clazz)
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+
+    protected abstract val viewModel: VM
 
     abstract fun render(viewState: VS)
 

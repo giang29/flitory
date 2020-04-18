@@ -9,20 +9,23 @@ dependencies {
     implementation(project(":exception"))
 
     implementation(Dependencies.coroutinesCore)
-    implementation(Dependencies.koinCore)
+
     implementation(Dependencies.kotlinStdLib)
     implementation(Dependencies.okHttp)
     implementation(Dependencies.okHttpLoggingInterceptor)
     api(Dependencies.retrofit) {
         exclude(module = "okhttp")
     }
-    implementation(Dependencies.moshi)
+    api(Dependencies.moshi)
     implementation(Dependencies.moshiKotlin)
-    implementation(Dependencies.retrofitConverterMoshi)
+    api(Dependencies.retrofitConverterMoshi)
+    implementation(Dependencies.dagger)
+    kapt(Dependencies.daggerCompiler)
 
     testImplementation(TestDependencies.assertJ)
     testImplementation(TestDependencies.junit)
     testImplementation(TestDependencies.mockWebServer)
+    testImplementation(TestDependencies.coroutinesTest)
 }
 
 java {
