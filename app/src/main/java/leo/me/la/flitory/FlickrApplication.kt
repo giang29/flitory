@@ -7,7 +7,7 @@ import dagger.android.DispatchingAndroidInjector
 import leo.me.la.flitory.di.DaggerApplicationComponent
 import javax.inject.Inject
 
-internal class FlickrApplication: DaggerApplication() {
+internal open class FlickrApplication: DaggerApplication() {
     @Inject
     lateinit var dispatchingAndroidInjector: DispatchingAndroidInjector<Activity>
 

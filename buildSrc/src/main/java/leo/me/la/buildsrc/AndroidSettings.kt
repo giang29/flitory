@@ -9,5 +9,5 @@ object AndroidSettings {
     val sourceCompatibility = JavaVersion.VERSION_1_8
     val targetCompatibility = JavaVersion.VERSION_1_8
 
-    const val testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+    const val testInstrumentationRunner = "leo.me.la.flitory.common.CustomTestRunner"
 }

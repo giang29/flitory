@@ -89,6 +89,7 @@ dependencies {
     androidTestImplementation(TestDependencies.assertJAndroid)
     androidTestImplementation(TestDependencies.espresso)
     androidTestImplementation(TestDependencies.espressoCont)
+    androidTestImplementation(TestDependencies.archCoreTesting)
     androidTestImplementation(TestDependencies.mockkAndroid) {
         exclude(group = "org.jetbrains.kotlin", module = "kotlin-reflect")
     }
@@ -96,4 +97,5 @@ dependencies {
     androidTestImplementation(TestDependencies.testRunner)
     kapt(Dependencies.glideCompiler)
     kapt(Dependencies.epoxyProcessor)
+    kaptAndroidTest(Dependencies.daggerCompiler)
 }
