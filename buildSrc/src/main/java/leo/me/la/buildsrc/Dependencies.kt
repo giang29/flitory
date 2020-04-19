@@ -8,7 +8,7 @@ object Versions {
     const val cardView = "1.0.0"
     const val constraintlayout = "2.0.0-beta1"
     const val coreKtx = "1.2.0-beta01"
-    const val coreTesting = "1.1.1"
+    const val coreTesting = "2.0.0"
     const val coroutinesCore = "1.3.2"
     const val espresso = "3.3.0-alpha02"
     const val glide = "4.10.0"
@@ -61,7 +61,7 @@ object Dependencies {
 
 
 object TestDependencies {
-    const val archCoreTesting = "android.arch.core:core-testing:${Versions.coreTesting}"
+    const val archCoreTesting = "androidx.arch.core:core-testing:${Versions.coreTesting}"
     const val assertJ = "org.assertj:assertj-core:${Versions.assertJ}"
     const val assertJAndroid = "com.squareup.assertj:assertj-android:${Versions.assertJAndroid}"
     const val espresso = "androidx.test.espresso:espresso-core:${Versions.espresso}"
