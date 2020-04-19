@@ -2,8 +2,8 @@ package leo.me.la.flitory.di
 
 import dagger.BindsInstance
 import dagger.Component
-import dagger.android.AndroidInjectionModule
 import dagger.android.AndroidInjector
+import dagger.android.support.AndroidSupportInjectionModule
 import leo.me.la.cache.di.CacheModule
 import leo.me.la.common.di.Debug
 import leo.me.la.data.di.DataModule
@@ -16,7 +16,7 @@ import javax.inject.Singleton
 @Component(
     modules = [
         ApplicationModule::class,
-        AndroidInjectionModule::class,
+        AndroidSupportInjectionModule::class,
         SearchPhotoModule::class,
         CacheModule::class,
         RemoteModule::class,
